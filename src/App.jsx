@@ -14,11 +14,27 @@ import MobileNav from './components/MobileNav';
 import SearchResults from './components/SearchResults';
 
 import { extractRecipe, searchRecipes, extractMultiple } from './services/extractorService';
-import { getSavedRecipes, saveRecipe, getSaveCount, getMaxFreeSaves, setIsPremium } from './services/storageService';
+import { getSavedRecipes, saveRecipe, getSaveCount, getMaxFreeSaves, setIsPremium, getTheme, setTheme as setStoredTheme } from './services/storageService';
+import { initAuth, login, logout } from './services/authService';
 
 export default function App() {
+  const [user, setUser] = useState(null);
+  
   // Navigation
   const [view, setView] = useState('home'); 
+
+  // Theme Management
+  const [theme, setTheme] = useState(() => getTheme());
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    setStoredTheme(next);
+  };
 
   // Discovery State
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,6 +47,16 @@ export default function App() {
     const handleResize = () => setIsMobile(window.innerWidth < 640);
     window.addEventListener('resize', handleResize);
     
+    const cleanupAuth = initAuth((currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        // Future: Check if user is Pro in DB/Metadata
+        // For now, check if they have a 'pro' metadata or role
+        const isPro = currentUser.app_metadata?.roles?.includes('pro');
+        if (isPro) setIsPremium(true);
+      }
+    });
+
     // Check for Stripe success redirect
     const params = new URLSearchParams(window.location.search);
     if (params.get('success') === 'true') {
@@ -41,7 +67,10 @@ export default function App() {
       });
     }
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cleanupAuth?.();
+    };
   }, []);
 
   // Recipe extraction state
@@ -173,6 +202,11 @@ export default function App() {
         onNavigate={navigate}
         savedCount={savedRecipes.length}
         onUpgrade={handleUpgradeClick}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        user={user}
+        onLogin={login}
+        onLogout={logout}
       />
 
       <main>
@@ -227,6 +261,7 @@ export default function App() {
             onRecipesChange={refreshCookbook}
             onUpgrade={handleUpgradeClick}
             onGoToList={() => setView('shopping-list')}
+            user={user}
           />
         )}
 
@@ -240,6 +275,10 @@ export default function App() {
           view={view} 
           onNavigate={navigate} 
           hasPro={getSaveCount() > 5} 
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          user={user}
+          onLogin={login}
         />
       ) : (
         <footer className="app-footer">

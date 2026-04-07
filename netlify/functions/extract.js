@@ -131,7 +131,7 @@ export async function handler(event) {
 
     try {
       rawHTML = await Promise.any(fetchPromises);
-    } catch (e) {
+    } catch {
       console.warn(`All fetch attempts failed for: ${url}`);
     }
 

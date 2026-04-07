@@ -14,7 +14,7 @@ export default function ExtractorCard({ onExtract, onSearch, isLoading, progress
     try {
       new URL(string);
       return string.includes('.');
-    } catch (_) {
+    } catch {
       return false;
     }
   };

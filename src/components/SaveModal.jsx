@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { saveRecipe } from '../services/storageService';
+import { saveRecipe, getCategories } from '../services/storageService';
 
 export default function SaveModal({ recipe, onClose, onSaved, onUpgrade }) {
   const [category, setCategory] = useState('');
+  const existingCategories = getCategories();
 
   const handleSave = () => {
     const result = saveRecipe(recipe, category.trim() || 'Uncategorized');
@@ -47,7 +48,13 @@ export default function SaveModal({ recipe, onClose, onSaved, onUpgrade }) {
             onKeyDown={e => e.key === 'Enter' && handleSave()}
             maxLength={40}
             autoFocus
+            list="category-suggestions"
           />
+          <datalist id="category-suggestions">
+            {existingCategories.map(cat => (
+              <option key={cat} value={cat} />
+            ))}
+          </datalist>
         </div>
 
         <div style={{ display: 'flex', gap: 'var(--space-3)' }}>

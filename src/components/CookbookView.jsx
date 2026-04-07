@@ -1,7 +1,20 @@
 import { useState } from 'react';
-import { deleteRecipe, getCategories, saveToShoppingList } from '../services/storageService';
+import { deleteRecipe, getCategories, saveToShoppingList, syncWithCloud } from '../services/storageService';
 
-export default function CookbookView({ recipes, onRecipeClick, onRecipesChange, onUpgrade, onGoToList }) {
+export default function CookbookView({ recipes, onRecipeClick, onRecipesChange, onUpgrade, onGoToList, user }) {
+  const [isSyncing, setIsSyncing] = useState(false);
+  
+  const handleSync = async () => {
+    if (!user) return;
+    setIsSyncing(true);
+    const res = await syncWithCloud(user);
+    setIsSyncing(false);
+    if (res.success) {
+      alert(`Synced ${res.count} recipes to your cloud account! ☁️`);
+    } else {
+      alert(`Sync failed: ${res.message}`);
+    }
+  };
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -57,6 +70,16 @@ export default function CookbookView({ recipes, onRecipeClick, onRecipesChange, 
           My Cookbook
         </h1>
         <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+          {user && (
+            <button 
+              className="btn btn-secondary btn-sm" 
+              onClick={handleSync} 
+              disabled={isSyncing}
+              style={{ background: isSyncing ? 'var(--color-surface-2)' : '' }}
+            >
+              {isSyncing ? '⌛ Syncing...' : '☁️ Cloud Sync'}
+            </button>
+          )}
           <button className="btn btn-secondary btn-sm" onClick={() => setIsSelectMode(!isSelectMode)}>
             {isSelectMode ? 'Cancel Selection' : '🛒 Create List'}
           </button>

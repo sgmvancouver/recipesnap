@@ -1,4 +1,4 @@
-export default function Header({ view, onNavigate, savedCount, onUpgrade }) {
+export default function Header({ view, onNavigate, savedCount, onUpgrade, theme, onToggleTheme, user, onLogin, onLogout }) {
   return (
     <header className="app-header">
       <div className="container">
@@ -22,6 +22,28 @@ export default function Header({ view, onNavigate, savedCount, onUpgrade }) {
             >
               My Cookbook {savedCount > 0 && `(${savedCount})`}
             </button>
+            <button
+              className="nav-link"
+              onClick={onToggleTheme}
+              title="Toggle Theme"
+              aria-label="Toggle Theme"
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
+            
+            {user ? (
+              <div className="user-profile">
+                <button className="nav-link profile-btn" title={user.user_metadata?.full_name || 'My Account'}>
+                  👤 {user.user_metadata?.full_name?.split(' ')[0] || 'Account'}
+                </button>
+                <div className="profile-dropdown">
+                  <button onClick={onLogout} className="dropdown-item">Logout</button>
+                </div>
+              </div>
+            ) : (
+              <button className="nav-link" onClick={onLogin}>Login</button>
+            )}
+
             <button
               className="nav-link go-pro-btn"
               onClick={onUpgrade}

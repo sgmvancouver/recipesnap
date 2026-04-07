@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getShoppingList, toggleListItem, clearShoppingList } from '../services/storageService';
 
 export default function ShoppingListView({ onBack }) {
