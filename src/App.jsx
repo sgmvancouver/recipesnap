@@ -30,6 +30,17 @@ export default function App() {
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 640);
     window.addEventListener('resize', handleResize);
+    
+    // Check for Stripe success redirect
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success') === 'true') {
+      import('./services/storageService').then(({ setIsPremium }) => {
+        setIsPremium(true);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        showToast('Welcome to RecipeSnap Pro! ⭐', 'success');
+      });
+    }
+
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 

@@ -55,9 +55,9 @@ export default function PremiumModal({ onClose, onSubscribe, freeUsed, freeMax }
             id="annual-plan-btn"
           >
             <div className="price-option-label">Annual</div>
-            <div className="price-option-amount">$10</div>
+            <div className="price-option-amount">$14.99</div>
             <div className="price-option-period">per year</div>
-            <div className="price-option-badge">Save 17%</div>
+            <div className="price-option-badge">Save 37%</div>
           </button>
           <button
             className={`price-option ${selected === 'monthly' ? 'selected' : ''}`}
@@ -67,7 +67,7 @@ export default function PremiumModal({ onClose, onSubscribe, freeUsed, freeMax }
             id="monthly-plan-btn"
           >
             <div className="price-option-label">Monthly</div>
-            <div className="price-option-amount">$1</div>
+            <div className="price-option-amount">$1.99</div>
             <div className="price-option-period">per month</div>
           </button>
         </div>
@@ -75,7 +75,19 @@ export default function PremiumModal({ onClose, onSubscribe, freeUsed, freeMax }
         <button
           className="btn btn-primary"
           style={{ width: '100%', justifyContent: 'center', padding: 'var(--space-5)' }}
-          onClick={() => onSubscribe(selected)}
+          onClick={() => {
+            // Priority: Real Stripe links in Production/Env
+            const stripeUrl = selected === 'annual' 
+              ? import.meta.env.VITE_STRIPE_PAYMENT_LINK_ANNUAL 
+              : import.meta.env.VITE_STRIPE_PAYMENT_LINK_MONTHLY;
+              
+            if (stripeUrl) {
+              window.location.href = stripeUrl;
+            } else {
+              alert("Stripe link not found! Check your .env.local file or Netlify environment variables.");
+              onSubscribe(selected); // fallback temporarily
+            }
+          }}
           id="subscribe-btn"
         >
           Get RecipeSnap Pro →
