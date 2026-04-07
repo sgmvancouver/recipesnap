@@ -246,7 +246,7 @@ export default function App() {
           <div className="container">
             <p>RecipeSnap — Bloat Free Recipes</p>
             <nav className="footer-links" aria-label="Footer links">
-              <a href="#" className="footer-link" onClick={() => navigate('home')}>Extractor</a>
+              <a href="#" className="footer-link" onClick={() => navigate('home')}>Extract/Search</a>
               <a href="#" className="footer-link" onClick={() => navigate('cookbook')}>Cookbook</a>
               <a href="#" className="footer-link" onClick={() => navigate('shopping-list')}>List</a>
               <a href="#" className="footer-link" onClick={handleUpgradeClick}>⭐ Go Pro</a>

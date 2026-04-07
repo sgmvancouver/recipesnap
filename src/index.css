@@ -778,14 +778,15 @@ body {
 }
 
 .pricing-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
   margin-bottom: var(--space-6);
 }
 
 .price-option {
-  padding: var(--space-5);
+  width: 100%;
+  padding: var(--space-4);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
   cursor: pointer;
@@ -794,6 +795,10 @@ body {
   background: none;
   font-family: var(--font-sans);
   color: var(--color-text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .price-option:hover {
@@ -951,7 +956,7 @@ body {
   .ingredients-grid { grid-template-columns: 1fr; }
   .pricing-options { grid-template-columns: 1fr; }
   .modal-card { padding: var(--space-6); }
-  .header-nav .nav-link:not(.btn-primary) { display: none; }
+  .header-nav .nav-link:not(.go-pro-btn) { display: none; }
   .step-text { font-size: 1.25rem; }
 }
 

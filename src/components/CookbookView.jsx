@@ -82,7 +82,7 @@ export default function CookbookView({ recipes, onRecipeClick, onRecipesChange, 
           <div className="empty-state-icon">📖</div>
           <h2 className="empty-state-title">Your cookbook is empty</h2>
           <p className="empty-state-text">
-            Extract a recipe and click "Save Recipe" to add it here
+            Search for a recipe and click "Save Recipe" to add it here
           </p>
         </div>
       ) : (

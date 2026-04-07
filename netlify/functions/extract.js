@@ -4,7 +4,7 @@ const API_KEY = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Model preference order — first available will be used
-const MODELS_TO_TRY = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.0-pro'];
+const MODELS_TO_TRY = ['gemini-1.5-flash', 'gemini-2.5-flash', 'gemini-1.0-pro'];
 
 const EXTRACTION_PROMPT = `You are an expert recipe parser. Extract the recipe from the following webpage HTML or text.
 Return ONLY a valid JSON object with this exact structure, no markdown, no explanation:

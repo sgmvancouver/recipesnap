@@ -8,7 +8,7 @@ export default function SearchResults({ query, results, onRecipeClick, onSave, o
           </button>
           <div className="results-title-group">
             <h2 className="results-title">Found for "{query}"</h2>
-            <p className="results-subtitle">Extracted 4 top-rated recipes from the web.</p>
+            <p className="results-subtitle">Found {results.length} top-rated recipes from the web.</p>
           </div>
         </header>
 

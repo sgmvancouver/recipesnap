@@ -71,7 +71,7 @@ export default function ExtractorCard({ onExtract, onSearch, isLoading, progress
                 disabled={isLoading || !inputValue.trim()}
                 id="extract-btn"
               >
-                {isLoading ? 'Thinking…' : (isUrl(inputValue) ? '✨ Extract' : '🔍 Find Recipes')}
+                {isLoading ? 'Thinking…' : (isUrl(inputValue) ? '✨ Extract/Search' : '🔍 Find Recipes')}
               </button>
             </div>
           </form>

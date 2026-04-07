@@ -72,35 +72,31 @@ export async function searchRecipes(query) {
 
 export async function extractMultiple(urls, onProgress = () => {}) {
   const results = [];
-  let attempted = 0;
-  
-  // Try them in batches of 3 to balance speed and avoid hitting API rate limits.
-  for (let i = 0; i < urls.length; i += 3) {
-    if (results.length >= 4) break;
-    
-    const chunk = urls.slice(i, i + 3);
-    const promises = chunk.map(async (url) => {
+  const targets = urls.slice(0, 4);
+
+  if (targets.length === 0) return [];
+
+  return new Promise((resolve) => {
+    let completedCount = 0;
+    let hasResolved = false;
+
+    targets.forEach(async (url) => {
       try {
         const recipe = await extractRecipe(url);
-        return recipe;
+        if (recipe && !hasResolved) {
+          results.push(recipe);
+        }
       } catch (err) {
         console.warn(`Extraction failed for ${url}:`, err.message);
-        return null;
+      } finally {
+        completedCount++;
+        // As soon as we hit 2 successful recipes, resolve immediately
+        if (!hasResolved && (results.length >= 2 || completedCount === targets.length)) {
+          hasResolved = true;
+          onProgress(100);
+          resolve(results.slice(0, 2));
+        }
       }
     });
-
-    const chunkResults = await Promise.all(promises);
-    chunkResults.forEach(r => {
-      if (r && results.length < 4) {
-        results.push(r);
-      }
-    });
-
-    attempted += chunk.length;
-    const percentage = results.length >= 4 ? 100 : Math.min(95, Math.round((attempted / urls.length) * 100));
-    onProgress(percentage);
-  }
-  
-  onProgress(100);
-  return results;
+  });
 }

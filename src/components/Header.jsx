@@ -13,7 +13,7 @@ export default function Header({ view, onNavigate, savedCount, onUpgrade }) {
               onClick={() => onNavigate('home')}
               aria-current={view === 'home' ? 'page' : undefined}
             >
-              Extract
+              Extract/Search
             </button>
             <button
               className="nav-link"

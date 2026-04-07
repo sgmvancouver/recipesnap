@@ -1,6 +1,6 @@
 export default function MobileNav({ view, onNavigate, hasPro }) {
   const links = [
-    { id: 'home', icon: '📝', label: 'Extract' },
+    { id: 'home', icon: '📝', label: 'Extract/Search' },
     { id: 'cookbook', icon: '📖', label: 'Books' },
     { id: 'shopping-list', icon: '🛒', label: 'List' },
     { id: 'pro', icon: '⭐', label: 'Pro' }

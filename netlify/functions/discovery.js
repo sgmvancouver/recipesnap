@@ -3,21 +3,16 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const API_KEY = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-const MODELS_TO_TRY = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.0-pro'];
+const MODELS_TO_TRY = ['gemini-2.5-flash', 'gemini-1.5-flash'];
 
-const DISCOVERY_PROMPT = `You are a world-class recipe scout. You MUST USE GOOGLE SEARCH to find 4 of the HIGHEST rated, absolute classic, and most reliable recipe URLs for the following dish.
-Do NOT guess or hallucinate URLs. Search the web, find real, live URLs to specific recipe pages.
-Return ONLY a valid JSON array of objects, with no markdown code blocks, no explanation.
+const DISCOVERY_PROMPT = `Find 3 highly-rated, absolute classic recipe URLs EXACTLY matching the dish requested. You MUST USE GOOGLE SEARCH to verify these exist.
+Do NOT hallucinate. Do NOT include unrelated recipes.
+Return ONLY a valid JSON array of objects, no markdown, no explanation.
 
 Each object MUST have:
-- title: The name of the dish as per that specific site.
-- url: The full live URL to the recipe page you found.
-- source: The name of the website you found it on.
-
-Rules:
-- URLs must be DIRECT and active. 
-- Do NOT return search results pages, only individual recipe pages.
-- Ensure the URLs look well-formed.
+- title: The EXACT recipe name for the dish
+- url: The full live URL to the specific recipe (must be active)
+- source: The website publisher name
 
 Dish to find: 
 `;
@@ -84,10 +79,10 @@ export async function handler(event) {
       throw lastError || new Error('Discovery failed: no models available.');
     }
 
-    // Basic validation and limit to 6
+    // Basic validation and limit to 4
     const validResults = results
       .filter(r => r.title && r.url && r.url.startsWith('http'))
-      .slice(0, 6);
+      .slice(0, 4);
 
     return {
       statusCode: 200,
