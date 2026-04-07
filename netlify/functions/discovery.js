@@ -52,7 +52,6 @@ export async function handler(event) {
           tools: [{ googleSearch: {} }],
           generationConfig: {
             temperature: 0.2, // increased slightly to give it room to execute search
-            responseMimeType: 'application/json',
           }
         });
 
