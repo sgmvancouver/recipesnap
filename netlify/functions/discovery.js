@@ -3,19 +3,16 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const API_KEY = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-const MODELS_TO_TRY = ['gemini-2.5-flash', 'gemini-1.5-flash'];
+const MODELS_TO_TRY = ['gemini-2.0-flash', 'gemini-1.5-flash'];
 
-const DISCOVERY_PROMPT = `Find 3 highly-rated, absolute classic recipe URLs EXACTLY matching the dish requested. You MUST USE GOOGLE SEARCH to verify these exist.
-Do NOT hallucinate. Do NOT include unrelated recipes.
-Return ONLY a valid JSON array of objects, no markdown, no explanation.
-
-Each object MUST have:
-- title: The EXACT recipe name for the dish
-- url: The full live URL to the specific recipe (must be active)
-- source: The website publisher name
-
-Dish to find: 
-`;
+const DISCOVERY_PROMPT = `Find 3 highly-rated, classic RECIPE URLs for the dish requested: [QUERY].
+STRICT RULES:
+1. Use Google Search to find existing, live URLs.
+2. Every result MUST be a specific recipe matching the query dish exactly. 
+3. EXCLUDE unrelated recipes (e.g. dont include a coffee recipe if the query is roast chicken).
+4. Return ONLY a valid JSON array of objects: [{"title": "Classic Recipe Name", "url": "https://...", "source": "Site Name"}]
+5. Do NOT hallucinate URLs. Do NOT include sites that just mention the dish.
+Dish to find: `;
 
 export async function handler(event) {
   if (event.httpMethod !== 'POST') {
@@ -79,10 +76,20 @@ export async function handler(event) {
       throw lastError || new Error('Discovery failed: no models available.');
     }
 
-    // Basic validation and limit to 4
+    // Validation: Ensure result title or URL actually mentions the core keywords from the query
+    const queryKeywords = query.toLowerCase().split(/\s+/).filter(w => w.length > 3);
     const validResults = results
       .filter(r => r.title && r.url && r.url.startsWith('http'))
+      .filter(r => {
+        const fullText = (r.title + ' ' + r.url).toLowerCase();
+        // If we have keywords, at least one must match (basic check)
+        return queryKeywords.length === 0 || queryKeywords.some(kw => fullText.includes(kw));
+      })
       .slice(0, 4);
+
+    if (validResults.length === 0) {
+      console.warn(`No valid discovery results for: ${query}. Returning empty array.`);
+    }
 
     return {
       statusCode: 200,
