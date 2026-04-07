@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const API_KEY = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-const MODELS_TO_TRY = ['gemini-2.0-flash', 'gemini-1.5-flash'];
+const MODELS_TO_TRY = ['gemini-2.5-flash', 'gemini-2.0-flash'];
 
 const DISCOVERY_PROMPT = `Find 3 highly-rated, classic RECIPE URLs for the dish requested: [QUERY].
 STRICT RULES:
