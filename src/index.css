@@ -3,7 +3,7 @@
    ===================================================== */
 
 :root {
-  /* Color Palette */
+  /* Default: Dark Theme Color Palette */
   --color-bg:           #0d0f0e;
   --color-surface:      #161a18;
   --color-surface-2:    #1e2421;
@@ -59,6 +59,23 @@
   --transition-slow: 400ms ease;
 }
 
+[data-theme="light"] {
+  --color-bg:           #f8faf9;
+  --color-surface:      #ffffff;
+  --color-surface-2:    #f0f4f2;
+  --color-border:       #e2e8e5;
+  --color-border-light: #d1dbd6;
+
+  --color-text-primary:   #1a1f1d;
+  --color-text-secondary: #4a5953;
+  --color-text-muted:     #7a8c85;
+
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 40px rgba(0,0,0,0.1);
+  --shadow-green: 0 0 24px rgba(34, 197, 94, 0.1);
+}
+
 /* ── Reset ── */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -106,7 +123,8 @@ body {
   top: 0;
   z-index: 100;
   padding: var(--space-4) 0;
-  background: rgba(13, 15, 14, 0.85);
+  background: var(--color-bg);
+  opacity: 0.95;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
@@ -206,7 +224,7 @@ body {
   letter-spacing: -0.035em;
   line-height: 1.1;
   margin-bottom: var(--space-5);
-  background: linear-gradient(135deg, #f0f4f2 0%, #8fa89e 100%);
+  background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-text-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -433,6 +451,14 @@ body {
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
+}
+
+.category-badge {
+  background: var(--color-green-subtle);
+  color: var(--color-green) !important;
+  border-color: rgba(34, 197, 94, 0.2) !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 /* ── Toolbar ── */
@@ -1444,3 +1470,11 @@ input, textarea, select {
   .results-title { font-size: 1.75rem; }
   .results-grid { grid-template-columns: 1fr; }
 }
+
+/* -- User Profile & Dropdown -- */
+.user-profile { position: relative; }
+.profile-dropdown { position: absolute; top: calc(100% + 10px); right: 0; background: var(--color-surface); border: 1px solid var(--color-border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: var(--space-2); min-width: 140px; display: none; z-index: 100; }
+.user-profile:hover .profile-dropdown { display: block; }
+.dropdown-item { width: 100%; border: none; background: none; padding: var(--space-3) var(--space-4); text-align: left; font-size: 14px; color: var(--color-text-primary); cursor: pointer; border-radius: var(--radius-md); }
+.dropdown-item:hover { background: var(--color-surface-2); color: var(--color-red); }
+.profile-btn { display: flex; align-items: center; gap: var(--space-2); font-weight: 500; }

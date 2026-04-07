@@ -1,9 +1,9 @@
-export default function MobileNav({ view, onNavigate, hasPro }) {
+export default function MobileNav({ view, onNavigate, user, onLogin }) {
   const links = [
-    { id: 'home', icon: '📝', label: 'Extract/Search' },
+    { id: 'home', icon: '📝', label: 'Extract' },
     { id: 'cookbook', icon: '📖', label: 'Books' },
     { id: 'shopping-list', icon: '🛒', label: 'List' },
-    { id: 'pro', icon: '⭐', label: 'Pro' }
+    { id: 'profile', icon: user ? '👤' : '🔑', label: user ? 'You' : 'Login', action: user ? () => onNavigate('cookbook') : onLogin }
   ];
 
   return (
@@ -13,7 +13,7 @@ export default function MobileNav({ view, onNavigate, hasPro }) {
           <button
             key={link.id}
             className={`mobile-nav-item ${view === link.id ? 'active' : ''}`}
-            onClick={() => onNavigate(link.id === 'pro' ? 'cookbook' : link.id)}
+            onClick={() => link.action ? link.action() : onNavigate(link.id)}
             aria-current={view === link.id ? 'page' : undefined}
           >
             <span className="mobile-nav-icon" aria-hidden="true">{link.icon}</span>

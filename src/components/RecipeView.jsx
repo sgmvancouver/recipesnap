@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ScalingControls from './ScalingControls';
-import { scaleQuantity, updateRecipe } from '../services/storageService';
+import { scaleQuantity, updateRecipe, getCategories } from '../services/storageService';
 
 export default function RecipeView({ recipe, onSave, isSaved, onNewRecipe, onCookMode }) {
   const [multiplier, setMultiplier] = useState(1);
@@ -11,6 +11,7 @@ export default function RecipeView({ recipe, onSave, isSaved, onNewRecipe, onCoo
   // Edit state
   const [isEditing, setIsEditing] = useState(false);
   const [editedRecipe, setEditedRecipe] = useState(recipe);
+  const existingCategories = getCategories();
 
   const handleScale = (factor) => {
     if (factor === null) setMultiplier(1);
@@ -45,6 +46,24 @@ export default function RecipeView({ recipe, onSave, isSaved, onNewRecipe, onCoo
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: recipe.title,
+      text: `Check out this recipe for ${recipe.title}!`,
+      url: recipe.sourceUrl,
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if (err.name !== 'AbortError') handleCopy();
+      }
+    } else {
+      handleCopy();
+    }
+  };
+
   const handleSaveEdit = () => {
     if (isSaved) {
       updateRecipe(recipe.id, editedRecipe);
@@ -67,6 +86,9 @@ export default function RecipeView({ recipe, onSave, isSaved, onNewRecipe, onCoo
           </button>
           <button className="btn btn-secondary btn-sm" onClick={handleCopy}>
             {copied ? '✓ Copied!' : '📋 Copy'}
+          </button>
+          <button className="btn btn-secondary btn-sm" onClick={handleShare} title="Share recipe link">
+            📤 Share
           </button>
           <button className="btn btn-secondary btn-sm" onClick={() => setIsEditing(!isEditing)}>
             {isEditing ? 'Cancel' : '✏️ Edit'}
@@ -104,7 +126,23 @@ export default function RecipeView({ recipe, onSave, isSaved, onNewRecipe, onCoo
             <textarea 
               value={editedRecipe.description} 
               onChange={e => setEditedRecipe({...editedRecipe, description: e.target.value})}
+              rows={4}
             />
+          </div>
+          <div className="form-group" style={{ marginBottom: 'var(--space-6)' }}>
+            <label>Category</label>
+            <input 
+              type="text" 
+              value={editedRecipe.category || ''} 
+              onChange={e => setEditedRecipe({...editedRecipe, category: e.target.value})}
+              placeholder="e.g. Dinners, Baking…"
+              list="category-suggestions"
+            />
+            <datalist id="category-suggestions">
+              {existingCategories.map(cat => (
+                <option key={cat} value={cat} />
+              ))}
+            </datalist>
           </div>
           <button className="btn btn-primary" onClick={handleSaveEdit}>Save Changes</button>
         </div>
@@ -141,6 +179,9 @@ export default function RecipeView({ recipe, onSave, isSaved, onNewRecipe, onCoo
               )}
               {recipe.cookTime && (
                 <span className="recipe-meta-tag">🔥 Cook: {recipe.cookTime}</span>
+              )}
+              {recipe.category && recipe.category !== 'Uncategorized' && (
+                <span className="recipe-meta-tag category-badge">📂 {recipe.category}</span>
               )}
               {recipe.tags?.map(tag => (
                 <span key={tag} className="recipe-meta-tag tag-pill">

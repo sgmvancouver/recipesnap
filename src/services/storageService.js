@@ -141,12 +141,56 @@ export function getMaxFreeSaves() {
 }
 
 /**
+ * Theme helpers
+ */
+export function getTheme() {
+  return localStorage.getItem('recipesnap_theme') || 'dark';
+}
+
+export function setTheme(theme) {
+  localStorage.setItem('recipesnap_theme', theme);
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+/**
  * Get all unique categories
  */
 export function getCategories() {
   const recipes = getSavedRecipes();
   const categories = new Set(recipes.map(r => r.category || 'Uncategorized'));
   return Array.from(categories).sort();
+}
+
+/**
+ * Cloud Synchronization
+ */
+export async function syncWithCloud(user) {
+  if (!user) return { success: false, message: 'Please login to sync.' };
+
+  const recipes = getSavedRecipes();
+  const token = user.token?.access_token;
+
+  try {
+    const response = await fetch('/.netlify/functions/cookbook', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ action: 'sync', recipes })
+    });
+
+    if (!response.ok) throw new Error('Sync failed');
+    
+    const data = await response.json();
+    
+    // If server has newer/different recipes, we might want to merge
+    // For now, it's a "Push Only" to the cloud
+    return { success: true, count: data.count };
+  } catch (err) {
+    console.error('Sync Error:', err);
+    return { success: false, message: err.message };
+  }
 }
 
 function getRecipeEmoji(tags = []) {

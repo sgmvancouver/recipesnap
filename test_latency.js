@@ -16,7 +16,7 @@ async function testLatency() {
   const startExt = performance.now();
   
   const results = [];
-  let attempted = 0;
+
   
   for (let i = 0; i < urls.length; i += 2) {
     if (results.length >= 2) break;
@@ -31,7 +31,7 @@ async function testLatency() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url: u.url })
         });
-        const rText = await res.text();
+        await res.text();
         console.log(`Extracted from ${u.url} in ${((performance.now() - reqStart)/1000).toFixed(2)}s. Status: ${res.status}`);
         return res.status === 200 ? true : null;
       } catch (err) {
