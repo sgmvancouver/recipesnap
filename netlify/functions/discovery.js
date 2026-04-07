@@ -5,17 +5,17 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 
 const MODELS_TO_TRY = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.0-pro'];
 
-const DISCOVERY_PROMPT = `You are a world-class recipe scout. Find 6 of the HIGHEST rated, absolute classic, and most reliable recipe URLs for the following dish.
+const DISCOVERY_PROMPT = `You are a world-class recipe scout. You MUST USE GOOGLE SEARCH to find 4 of the HIGHEST rated, absolute classic, and most reliable recipe URLs for the following dish.
+Do NOT guess or hallucinate URLs. Search the web, find real, live URLs to specific recipe pages.
 Return ONLY a valid JSON array of objects, with no markdown code blocks, no explanation.
 
 Each object MUST have:
 - title: The name of the dish as per that specific site.
-- url: The full live URL to the recipe page.
-- source: The name of the website (e.g. "AllRecipes", "FoodNetwork", "Serious Eats", "Bon Appetit").
+- url: The full live URL to the recipe page you found.
+- source: The name of the website you found it on.
 
 Rules:
-- URLs must be DIRECT and likely to be currently active. 
-- Prioritize high-quality domains like: allrecipes.com, foodnetwork.com, seriouseats.com, bonappetit.com, nytimes.com/cooking, kingarthurbaking.com.
+- URLs must be DIRECT and active. 
 - Do NOT return search results pages, only individual recipe pages.
 - Ensure the URLs look well-formed.
 
@@ -49,8 +49,9 @@ export async function handler(event) {
         console.log(`Discovery trying model: ${modelName}`);
         const model = genAI.getGenerativeModel({ 
           model: modelName,
+          tools: [{ googleSearch: {} }],
           generationConfig: {
-            temperature: 0,
+            temperature: 0.2, // increased slightly to give it room to execute search
             responseMimeType: 'application/json',
           }
         });

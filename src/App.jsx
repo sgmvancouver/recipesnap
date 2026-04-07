@@ -172,6 +172,7 @@ export default function App() {
         view={view}
         onNavigate={navigate}
         savedCount={savedRecipes.length}
+        onUpgrade={handleUpgradeClick}
       />
 
       <main>
