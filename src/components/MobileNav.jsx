@@ -2,6 +2,7 @@ export default function MobileNav({ view, onNavigate, user, onLogin }) {
   const links = [
     { id: 'home', icon: '📝', label: 'Extract' },
     { id: 'cookbook', icon: '📖', label: 'Books' },
+    { id: 'meal-planner', icon: '📅', label: 'Plan' },
     { id: 'shopping-list', icon: '🛒', label: 'List' },
     { id: 'profile', icon: user ? '👤' : '🔑', label: user ? 'You' : 'Login', action: user ? () => onNavigate('cookbook') : onLogin }
   ];

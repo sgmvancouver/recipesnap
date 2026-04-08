@@ -24,6 +24,13 @@ export default function Header({ view, onNavigate, savedCount, onUpgrade, theme,
             </button>
             <button
               className="nav-link"
+              onClick={() => onNavigate('planner')}
+              aria-current={view === 'planner' ? 'page' : undefined}
+            >
+              Planner
+            </button>
+            <button
+              className="nav-link"
               onClick={onToggleTheme}
               title="Toggle Theme"
               aria-label="Toggle Theme"

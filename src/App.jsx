@@ -10,6 +10,7 @@ import SaveModal from './components/SaveModal';
 import Toast from './components/Toast';
 import CookMode from './components/CookMode';
 import ShoppingListView from './components/ShoppingListView';
+import MealPlannerView from './components/MealPlannerView';
 import MobileNav from './components/MobileNav';
 import SearchResults from './components/SearchResults';
 
@@ -65,6 +66,31 @@ export default function App() {
         window.history.replaceState({}, document.title, window.location.pathname);
         showToast('Welcome to RecipeSnap Pro! ⭐', 'success');
       });
+    }
+
+    // Handle shared recipe routes
+    const path = window.location.pathname;
+    if (path.startsWith('/share/')) {
+      const shareId = path.split('/').pop();
+      if (shareId) {
+        setIsLoading(true);
+        setProgress('loading shared recipe...');
+        fetch(`/.netlify/functions/share?id=${shareId}`)
+          .then(res => res.json())
+          .then(recipe => {
+            if (recipe.error) throw new Error(recipe.error);
+            setCurrentRecipe(recipe);
+            setView('recipe');
+            window.history.replaceState({}, document.title, '/');
+          })
+          .catch(err => {
+            setError(`Shared recipe not found or expired. ${err.message}`);
+          })
+          .finally(() => {
+            setIsLoading(false);
+            setProgress(null);
+          });
+      }
     }
 
     return () => {
@@ -266,7 +292,14 @@ export default function App() {
         )}
 
         {view === 'shopping-list' && (
-          <ShoppingListView onBack={() => setView('cookbook')} />
+          <ShoppingListView onGoHome={() => setView('home')} />
+        )}
+
+        {view === 'meal-planner' && (
+          <MealPlannerView 
+            recipes={savedRecipes} 
+            onRecipeClick={handleCookbookRecipeClick}
+          />
         )}
       </main>
 

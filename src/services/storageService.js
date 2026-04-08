@@ -164,7 +164,16 @@ export function getCategories() {
 /**
  * Cloud Synchronization
  */
-export async function syncWithCloud(user) {
+export function getMealPlan() {
+  const plan = localStorage.getItem('recipe_snap_meal_plan');
+  return plan ? JSON.parse(plan) : {};
+}
+
+export function saveMealPlan(plan) {
+  localStorage.setItem('recipe_snap_meal_plan', JSON.stringify(plan));
+}
+
+export const syncWithCloud = async (user) => {
   if (!user) return { success: false, message: 'Please login to sync.' };
 
   const recipes = getSavedRecipes();
@@ -205,6 +214,11 @@ function getRecipeEmoji(tags = []) {
     vegan: '🌱',
     'gluten-free': '✨',
     quick: '⚡',
+    keto: '🥑',
+    paleo: '🍖',
+    'low-carb': '🥬',
+    'dairy-free': '🥛',
+    'nut-free': '🚫🥜',
   };
   for (const tag of tags || []) {
     if (tagMap[tag]) return tagMap[tag];

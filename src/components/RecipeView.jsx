@@ -46,21 +46,42 @@ export default function RecipeView({ recipe, onSave, isSaved, onNewRecipe, onCoo
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleShare = async () => {
-    const shareData = {
-      title: recipe.title,
-      text: `Check out this recipe for ${recipe.title}!`,
-      url: recipe.sourceUrl,
-    };
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
 
-    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        if (err.name !== 'AbortError') handleCopy();
+  const handleShare = async () => {
+    setIsSharing(true);
+    try {
+      const response = await fetch('/.netlify/functions/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(recipe)
+      });
+      
+      const data = await response.json();
+      if (data.url) {
+        setShareUrl(data.url);
+        
+        // Try Web Share API first
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: `Recipe: ${recipe.title}`,
+              text: `Check out this clean recipe for ${recipe.title}!`,
+              url: data.url
+            });
+            setIsSharing(false);
+          } catch {
+            // Fallback to showing link
+          }
+        }
       }
-    } else {
+    } catch (err) {
+      console.error('Share failed:', err);
+      // Fallback to just copying the source URL
       handleCopy();
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -87,8 +108,8 @@ export default function RecipeView({ recipe, onSave, isSaved, onNewRecipe, onCoo
           <button className="btn btn-secondary btn-sm" onClick={handleCopy}>
             {copied ? '✓ Copied!' : '📋 Copy'}
           </button>
-          <button className="btn btn-secondary btn-sm" onClick={handleShare} title="Share recipe link">
-            📤 Share
+          <button className="btn btn-secondary btn-sm" onClick={handleShare} disabled={isSharing}>
+            {isSharing ? '⌛ Sharing...' : '📤 Share'}
           </button>
           <button className="btn btn-secondary btn-sm" onClick={() => setIsEditing(!isEditing)}>
             {isEditing ? 'Cancel' : '✏️ Edit'}
@@ -109,6 +130,23 @@ export default function RecipeView({ recipe, onSave, isSaved, onNewRecipe, onCoo
           )}
         </div>
       </div>
+
+      {shareUrl && (
+        <div className="share-banner">
+          <p>Shared! Copy your unique link:</p>
+          <div className="share-input-group">
+            <input type="text" readOnly value={shareUrl} />
+            <button className="btn btn-primary btn-sm" onClick={() => {
+              navigator.clipboard.writeText(shareUrl);
+              setCopied(true);
+              setTimeout(() => { setCopied(false); setShareUrl(''); }, 2000);
+            }}>
+              {copied ? '✓ Copied' : 'Copy'}
+            </button>
+            <button className="btn btn-ghost btn-sm" onClick={() => setShareUrl('')}>✕</button>
+          </div>
+        </div>
+      )}
 
       {isEditing ? (
         <div className="recipe-editor editor-card">

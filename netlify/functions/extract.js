@@ -36,7 +36,7 @@ Rules:
   - original: the full original string exactly as written.
 - steps: CRITICAL — look for JSON-LD script data (schema.org/Recipe recipeInstructions), numbered steps in the text, or any "directions", "method", or "instructions" section. Extract ALL steps as an array of strings. If you find JSON-LD data with instructions, use those steps.
 - If a field genuinely cannot be found, use null (except "name" in ingredients — always fill it in).
-- tags: choose 1-3 from: breakfast, lunch, dinner, dessert, snack, vegetarian, vegan, gluten-free, quick, baking.
+- tags: choose 1-5 from: breakfast, lunch, dinner, dessert, snack, vegetarian, vegan, gluten-free, quick, baking, keto, paleo, low-carb, dairy-free, nut-free. Be thorough!
 - Never include ads, author bios, or SEO filler.
 
 HTML/text to parse:

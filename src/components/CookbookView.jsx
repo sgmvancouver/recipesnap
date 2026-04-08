@@ -33,7 +33,8 @@ export default function CookbookView({ recipes, onRecipeClick, onRecipesChange, 
         const text = typeof i === 'string' ? i : (i.name + ' ' + (i.original || ''));
         return text.toLowerCase().includes(q);
       }) ||
-      recipe.category?.toLowerCase().includes(q);
+      recipe.category?.toLowerCase().includes(q) ||
+      recipe.tags?.some(tag => tag.toLowerCase().includes(q));
     return matchesCategory && matchesSearch;
   });
 
